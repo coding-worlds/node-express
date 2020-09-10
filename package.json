@@ -11,7 +11,7 @@
     "test": "mocha"
   },
   "author": "bstar",
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "babel-runtime": "^6.23.0",
     "del": "^3.0.0",
