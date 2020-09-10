@@ -1,0 +1,725 @@
+swagger: '2.0'
+info:
+  description: RCQ项目
+  version: 1.0.0
+  title: RCQ系统-接口
+host: '192.168.20.197:8080'
+basePath: /api
+tags:
+  # - name: user
+  #   description: 用户相关
+  # - name: login
+  #   description: 登录
+  # - name: logout
+  #   description: 登出
+  - name: project
+    description: 项目相关
+  - name: upload
+    description: 上传文件
+  - name: origin
+    description: 系统相关
+  - name: analyze
+    description: 分析相关
+  - name: search
+    description: 检索相关
+schemes:
+  - http
+produces:
+  - application/json
+securityDefinitions:
+  APIKey:
+    type: apiKey
+    name: Authorization
+    in: header
+security:
+  - APIKey: []
+paths:
+  /project/create:
+    post:
+      tags:
+        - project
+      summary: 新建项目
+      description: 新建项目
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            properties:
+              project:
+                $ref: '#/definitions/ProjectSet'
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+  '/project{pid}':
+    get:
+      tags:
+        - project
+      summary: 获取单条项目
+      description: 获取单条项目
+      parameters:
+        - in: path
+          name: pid
+          type: integer
+          required: true
+          description: 项目ID
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectInfo'
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+    put:
+      tags:
+        - project
+      summary: 修改项目
+      description: 修改项目
+      parameters:
+        - in: path
+          name: pid
+          type: integer
+          required: true
+          description: 项目ID
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProjectSet'
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+    delete:
+      tags:
+        - project
+      summary: 删除项目
+      description: 删除项目
+      parameters:
+        - in: path
+          name: pid
+          type: integer
+          required: true
+          description: 项目ID
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+  /project/list:
+    get:
+      tags:
+        - project
+      summary: 获取项目列表
+      description: 获取项目列表
+      responses:
+        '200':
+          description: 查询成功
+          # headers:
+          #   X-BSC-COUNT:
+          #     type: integer
+          #     description: 总条数
+          #   X-BSC-PAGES:
+          #     type: integer
+          #     description: 总页数
+          #   X-BSC-CUR:
+          #     type: integer
+          #     description: 当前页
+          #   X-BSC-LIMIT:
+          #     type: integer
+          #     description: 页大小
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProjectList'
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+  /file/upload:
+    post:
+      tags:
+        - upload
+      summary: 上传Excle文件
+      description: 上传Excle文件
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            properties:
+              file:
+                type: object
+      responses:
+        '200':
+          description: ok
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RespBugData'
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+  /origin:
+    post:
+      tags:
+        - origin
+      summary: 增加系统
+      description: 增加系统
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+              type: array
+              items:
+                $ref: '#/definitions/OriginSet'
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+    get:
+      tags:
+        - origin
+      summary: 获取配置列表
+      description: 获取配置列表
+      responses:
+        '200':
+          description: 查询成功
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OriginList'
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+  '/origin{id}':
+    delete:
+      tags:
+        - origin
+      summary: 删除系统
+      description: 删除系统
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          description: 系统ID
+          required: true
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/Error500'
+  /search:
+    get:
+      tags:
+        - search
+      summary: 获取项目数组
+      description: 获取项目数组
+      responses:
+        '200':
+          description: 成功获取项目数组
+          schema:
+            properties:
+              projects:
+                type: array
+                description: 项目数组
+                items:
+                  type: string
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/searchError'
+    post:
+      tags:
+        - search
+      summary: 数据检索
+      description: 数据检索
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/searchInformation'
+      responses:
+        '200':
+          description: 搜索成功
+          schema:
+            $ref: '#/definitions/searchSuc'
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/searchError'
+  '/search/{project}':
+    get:
+      tags:
+        - search
+      summary: 获取数据来源范围
+      description: 获取数据来源范围
+      parameters:
+        - name: project
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: 成功
+          schema:
+            properties:
+              source:
+                type: array
+                description: 来源组
+                items:
+                  type: string
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/searchError'
+  '/searchScope':
+    post:
+      tags:
+        - search
+      summary: 获取可筛选范围
+      description: 获取可筛选范围
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            properties:
+              projects:
+                type: string
+                description: 项目
+              source:
+                type: string
+                description: 来源
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/huntingZone'
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/searchError'
+  /analyze:
+    post:
+      tags:
+        - analyze
+      summary: 分析数据
+      description: 分析数据
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/analyzeInformation'
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/analysisResult'
+        '500':
+          description: 服务端错误
+          schema:
+            $ref: '#/definitions/searchError'
+definitions:
+  ProjectSet:
+    type: object
+    description: 项目实体
+    properties:
+      title:
+        type: string
+        description: 标题
+      description:
+        type: string
+        description: 项目描述
+  ProjectInfo:
+    type: object
+    description: 项目实体
+    properties:
+      pid:
+        type: string
+        description: 项目ID
+      title:
+        type: string
+        description: 项目名称
+      bugNumber:
+        type: integer
+        description: bug数量
+      createTime:
+        type: integer
+        description: 创建时间
+      updateTime:
+        type: integer
+        description: 更新时间
+      updateNumber:
+        type: integer
+        description: 更新数量
+      isData:
+        type: boolean
+        description: 项目中有没有数据
+      description:
+        type: string
+        description: 项目描述
+  ProjectList:
+    type: object
+    description: 项目实体
+    properties:
+      pid:
+        type: string
+        description: 项目ID
+      title:
+        type: string
+        description: 标题
+      # description:
+      #   type: string
+      #   description: 项目描述
+      # createtime:
+      #   type: integer
+      #   description: 创建时间
+  OriginSet:
+    type: object
+    description: 配置实体
+    properties:
+      pid:
+        type: string
+        description: 项目ID
+      name:
+        type: string
+        description: 对应系统名称
+      description:
+        type: string
+        description: 配置描述
+  OriginList:
+    type: object
+    description: 配置实体
+    properties:
+      id:
+        type: string
+        description: 系统ID
+      name:
+        type: string
+        description: 系统名称
+      description:
+        type: string
+        description: 配置描述
+  RespBugData:
+   type: object
+   description: 返回残缺的数据
+   properties:
+      editionArray:
+        type: array
+        items:
+          type: string
+          description: 筛选得到的版本号
+      pid:
+        type: integer
+        description: 项目ID
+      id:
+        type: string
+        description: bugId
+      title:
+        type: string
+        description: bug标题
+      edition:
+        type: string
+        description: bug版本
+      state:
+        type: string
+        description: bug状态
+      founder:
+        type: string
+        description: 创建人
+      personliable:
+        type: string
+        description: 责任人
+      seriousness:
+        type: string
+        description: 严重性
+      description:
+        type: string
+        description: bug描述
+      createtime:
+        type: string
+        description: 创建时间
+  huntingZone:
+    type: object
+    description: 搜索范围
+    properties:
+      versions:
+        type: array
+        items:
+          type: string
+        description: 版本号
+      members:
+        type: array
+        items:
+          type: string
+        description: 人员组
+      state:
+        type: array
+        items:
+          type: string
+        description: 重要等级
+      grades:
+        type: array
+        items:
+          type: string
+        description: 重要等级
+      priorities:
+        type: array
+        items:
+          type: string
+        description: 优先级
+  searchInformation:
+    type: object
+    description: 请求传参
+    properties:
+      project:
+        type: string
+        description: 项目ID
+      source:
+        type: string
+        description: 数据来源
+      versions:
+        type: array
+        items:
+          type: string
+        description: 版本号
+      members:
+        type: array
+        items:
+          type: string
+        description: 人员组
+      state:
+        type: array
+        items:
+          type: string
+        description: 重要等级
+      times:
+        type: object
+        description: 时间范围
+        properties:
+          startTime:
+            type: string
+            description: 开始时间
+          endTime:
+            type: string
+            description: 结束时间
+      grades:
+        type: array
+        items:
+          type: string
+        description: 重要等级
+      priorities:
+        type: array
+        items:
+          type: string
+        description: 优先级
+      keyword:
+        type: string
+  analyzeInformation:
+    type: object
+    description: 请求传参
+    properties:
+      project:
+        type: string
+        description: 项目ID
+      source:
+        type: string
+        description: 数据来源
+      versions:
+        type: array
+        items:
+          type: string
+        description: 版本号
+      members:
+        type: array
+        items:
+          type: string
+        description: 人员组
+      state:
+        type: array
+        items:
+          type: string
+        description: 重要等级
+      times:
+        type: object
+        description: 时间范围
+        properties:
+          startTime:
+            type: string
+            description: 开始时间
+          endTime:
+            type: string
+            description: 结束时间
+      grades:
+        type: array
+        items:
+          type: string
+        description: 重要等级
+      priorities:
+        type: array
+        items:
+          type: string
+        description: 优先级
+      keyword:
+        type: string
+        description: 关键字
+      type:
+        type: string
+        description: 分析类别
+  BugData:
+    type: object
+    description: 成功返回符合条件的BUG信息
+    properties:
+      id:
+        type: string
+        description: BUGID
+      edition:
+        type: string
+        description: bug版本号
+      state:
+        type: string
+        description: bug状态
+      founder:
+        type: string
+        description: 创建人
+      personliable:
+        type: string
+        description: 责任人
+      priority:
+        type: string
+        description: BUG优先级
+      seriousness:
+        type: string
+        description: 严重性
+      title:
+        type: string
+        description: 标题
+      description:
+        type: string
+        description: 描述
+  searchSuc:
+    type: object
+    description: 角色实体
+    properties:
+      code:
+        type: integer
+        description: '2200'
+      datas:
+        type: array
+        items:
+          $ref: '#/definitions/BugData'
+  searchError:
+    type: object
+    description: 请求失败返回
+    properties:
+      code:
+        type: integer
+        description: 请求失败错误号
+      message:
+        type: string
+        description: 失败原因
+  BUGState:
+    type: object
+    description: BUG状态
+    properties:
+      Submitted:
+        type: integer
+      Assigned:
+        type: integer
+      Opened:
+        type: integer
+      Resolved:
+        type: integer
+      Released:
+        type: integer
+      Failed:
+        type: integer
+      Monitored:
+        type: integer
+      Postponed:
+        type: integer
+      Closed:
+        type: integer
+  BUGGrade:
+    type: object
+    description: BUG等级
+    properties:
+      1-Critical:
+        type: integer
+      2-Important:
+        type: integer
+      3-Secondary:
+        type: integer
+      4-Normal:
+        type: integer
+      5-Low:
+        type: integer
+  BUGPriority:
+    type: object
+    description: BUG优先级
+    properties:
+      1-Resolve Immediately:
+        type: integer
+      2-Give High Attention:
+        type: integer
+      3-Normal Queue:
+        type: integer
+      4-Low Priority:
+        type: integer
+  analysisVersionResult:
+    type: object
+    description: 分析版本后的结果
+    properties:
+      totalNum:
+        type: integer
+        description: bug数
+      resolvedNum:
+        type: integer
+        description: 已解决bug数
+      unsolvedNum:
+        type: integer
+        description: 未解决bug数
+      state:
+        $ref: '#/definitions/BUGState'
+      grade:
+        $ref: '#/definitions/BUGGrade'
+      priority:
+        $ref: '#/definitions/BUGPriority'
+  analysisResult:
+    type: object
+    description: 分析后的结果
+    properties:
+      version1:
+        $ref: '#/definitions/analysisVersionResult'
+  Error500:
+    type: object
+    description: 请求失败返回
+    properties:
+      code:
+        type: number
+        description: 请求失败错误号
+      message:
+        type: string
+        description: 失败原因
